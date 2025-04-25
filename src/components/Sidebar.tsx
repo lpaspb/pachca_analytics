@@ -6,10 +6,17 @@ import { LogOut } from 'lucide-react';
 import { PachkaUser } from '@/types/api';
 import { toast } from 'sonner';
 
+/**
+ * Пропсы для Sidebar
+ */
 interface SidebarProps {
+  /** Колбэк для выхода из аккаунта */
   onLogout: () => void;
 }
 
+/**
+ * Боковая панель с данными пользователя и кнопкой выхода
+ */
 export default function Sidebar({ onLogout }: SidebarProps) {
   const [user, setUser] = useState<PachkaUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -19,7 +26,10 @@ export default function Sidebar({ onLogout }: SidebarProps) {
   useEffect(() => {
     // Устанавливаем флаг монтирования
     isMountedRef.current = true;
-    
+
+    /**
+     * Загружает данные пользователя и обрабатывает логику сессии
+     */
     const fetchUser = async () => {
       setIsLoading(true);
       try {
@@ -46,15 +56,18 @@ export default function Sidebar({ onLogout }: SidebarProps) {
         }
       }
     };
-    
+
     fetchUser();
-    
+
     // Очистка при размонтировании компонента
     return () => {
       isMountedRef.current = false;
     };
   }, []);
 
+  /**
+   * Обработчик выхода из аккаунта
+   */
   const handleLogout = () => {
     pachkaApi.clearApiKey();
     onLogout();

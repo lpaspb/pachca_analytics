@@ -14,6 +14,13 @@ import { KeyRound, AlertCircle } from 'lucide-react';
 import { addDays, subDays } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter
+} from '@/components/ui/dialog';
+
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -585,78 +592,68 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background animate-fade-in">
+      {(!isAuthenticated && !isCheckingAuth) && (
+        <Dialog open={true} onOpenChange={() => {}}>
+          <DialogContent hideCloseButton>
+            <DialogHeader>
+              <div className="flex flex-col items-center gap-2">
+                <KeyRound className="w-8 h-8 text-primary mb-1" />
+                <h2 className="text-lg font-semibold">Введите API токен Пачки</h2>
+                <p className="text-sm text-muted-foreground text-center">
+                  Для доступа к аналитике требуется ваш персональный API токен. Получить его можно в настройках Пачки.
+                </p>
+              </div>
+            </DialogHeader>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setIsValidatingToken(true);
+                setTokenError('');
+                const result = await pachkaApi.validateApiKey(apiToken.trim());
+                setIsValidatingToken(false);
+                if (result.success) {
+                  setIsAuthenticated(true);
+                  pachkaApi.setApiKey(apiToken.trim());
+                  toast.success('Авторизация успешна');
+                } else {
+                  setTokenError(result.error || 'Некорректный токен');
+                }
+              }}
+              className="space-y-4 mt-2"
+            >
+              <Input
+                autoFocus
+                placeholder="API токен"
+                value={apiToken}
+                onChange={e => setApiToken(e.target.value)}
+                className="w-full"
+                disabled={isValidatingToken}
+              />
+              {tokenError && (
+                <div className="text-sm text-destructive text-center flex items-center gap-1 justify-center">
+                  <AlertCircle className="w-4 h-4" />
+                  {tokenError}
+                </div>
+              )}
+              <DialogFooter>
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-primary"
+                  disabled={!apiToken.trim() || isValidatingToken}
+                  loading={isValidatingToken}
+                >
+                  Войти
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      )}
+      
       <div className="container max-w-6xl mx-auto p-4">
         <div className="flex items-center justify-between mb-6 animate-slide-up">
           <h1 className="text-2xl font-bold">Аналитика чатов</h1>
-          
           <div className="flex items-center gap-3">
-            {!isAuthenticated && (
-              <div className="flex items-center gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" size="icon" className="relative rounded-full">
-                      <KeyRound className="h-5 w-5" />
-                      <span className="sr-only">Ввести токен API</span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80" align="end">
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <h3 className="font-medium">Токен API</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Введите токен API для полного доступа к данным
-                        </p>
-                      </div>
-                      
-                      {tokenError && (
-                        <Alert variant="destructive">
-                          <AlertDescription>{tokenError}</AlertDescription>
-                        </Alert>
-                      )}
-                      
-                      {connectionIssue && (
-                        <Alert 
-                          variant="default" 
-                          className="bg-amber-50 text-amber-900 border-amber-200"
-                        >
-                          <AlertCircle className="h-4 w-4 mr-2" />
-                          <AlertDescription className="text-xs">
-                            Возможны проблемы с подключением к серверу Pachka. Проверьте подключение к интернету или VPN.
-                          </AlertDescription>
-                        </Alert>
-                      )}
-                      
-                      <div>
-                        <Input
-                          type="password" 
-                          placeholder="Токен API Пачки"
-                          value={apiToken}
-                          onChange={(e) => setApiToken(e.target.value)}
-                          onKeyPress={(e) => e.key === 'Enter' && handleTokenSubmit()}
-                        />
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          Токен можно получить в настройках аккаунта Пачки
-                        </p>
-                      </div>
-                      
-                      <Button 
-                        className="w-full" 
-                        onClick={handleTokenSubmit}
-                        disabled={isValidatingToken}
-                      >
-                        {isValidatingToken ? (
-                          <>
-                            <span className="mr-2 h-4 w-4 border-t-2 border-b-2 border-current rounded-full animate-spin"></span>
-                            Проверка...
-                          </>
-                        ) : 'Войти'}
-                      </Button>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-            )}
-            
             <SettingsMenu onLogout={handleLogout} />
           </div>
         </div>

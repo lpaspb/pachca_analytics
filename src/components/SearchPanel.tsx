@@ -15,7 +15,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { extractMessageId, handleDateRangeChange } from '@/utils/searchUtils';
 
+/**
+ * Пропсы для SearchPanel
+ */
 interface SearchPanelProps {
   onSearch: (filters: SearchFilters) => void;
   additionalControls?: React.ReactNode;
@@ -91,15 +95,6 @@ export default function SearchPanel({
     });
   };
 
-  const extractMessageId = (input: string): string | null => {
-    // Если просто число
-    if (/^\d+$/.test(input)) return input;
-    // Если ссылка вида https://app.pachca.com/chats/2258174?message=482982137
-    const match = input.match(/message=(\d+)/);
-    if (match) return match[1];
-    return null;
-  };
-
   const handleMessagesSearch = () => {
     const messageIds = messagesSearch.messageIds
       .split(/[\n,\s]+/)
@@ -118,59 +113,23 @@ export default function SearchPanel({
     }
   };
 
-  const handleSimpleDateRangeChange = (range: DateRange | undefined) => {
-    if (range) {
-      setSimpleSearch({
-        ...simpleSearch,
-        dateRange: {
-          from: range.from || defaultFrom,
-          to: range.to || defaultTo,
-        }
-      });
-    }
-  };
-
-  const handleFilterDateRangeChange = (range: DateRange | undefined) => {
-    if (range) {
-      setFilterSearch({
-        ...filterSearch,
-        dateRange: {
-          from: range.from || defaultFrom,
-          to: range.to || defaultTo,
-        }
-      });
-    }
-  };
-
-  const handleMessagesDateRangeChange = (range: DateRange | undefined) => {
-    if (range) {
-      setMessagesSearch({
-        ...messagesSearch,
-        dateRange: {
-          from: range.from || defaultFrom,
-          to: range.to || defaultTo,
-        }
-      });
-    }
-  };
+  const handleSimpleDateRangeChange = handleDateRangeChange(simpleSearch, setSimpleSearch, defaultFrom, defaultTo);
+  const handleFilterDateRangeChange = handleDateRangeChange(filterSearch, setFilterSearch, defaultFrom, defaultTo);
+  const handleMessagesDateRangeChange = handleDateRangeChange(messagesSearch, setMessagesSearch, defaultFrom, defaultTo);
   
   return (
     <div className="search-container">
       <Tabs defaultValue="simple" className="w-full" onValueChange={setSearchMode}>
-        <TabsList className="grid grid-cols-3 bg-secondary">
-          <TabsTrigger value="simple" className="flex items-center gap-2">
-            <Search className="h-4 w-4" />
-            <span>По ID чата</span>
-          </TabsTrigger>
-          <TabsTrigger value="filter" className="flex items-center gap-2">
-            <Filter className="h-4 w-4" />
-            <span>По фильтрам</span>
-          </TabsTrigger>
-          <TabsTrigger value="messages" className="flex items-center gap-2">
-            <MessagesSquare className="h-4 w-4" />
-            <span>По ID сообщения</span>
-          </TabsTrigger>
-        </TabsList>
+        <TabsList className="grid grid-cols-2 bg-secondary w-full">
+  <TabsTrigger value="simple" className="flex items-center gap-2 w-full justify-center text-center">
+    <Search className="h-4 w-4" />
+    <span>По ID чата</span>
+  </TabsTrigger>
+  <TabsTrigger value="messages" className="flex items-center gap-2 w-full justify-center text-center">
+    <MessagesSquare className="h-4 w-4" />
+    <span>По ID сообщения</span>
+  </TabsTrigger>
+</TabsList>
         
         <TabsContent value="simple" className="space-y-4 mt-2">
           <div className="space-y-4">
@@ -181,7 +140,7 @@ export default function SearchPanel({
                 placeholder="Введите ID чатов (каждый с новой строки или через запятую)"
                 value={simpleSearch.chatIds}
                 onChange={(e) => 
-                  setSimpleSearch({ ...simpleSearch, chatIds: e.target.value })
+                  setSimpleSearch({ ...simpleSearch, chatIds: e.target.value.slice(0, 2000) }) // ограничение длины
                 }
                 className="bg-secondary min-h-[120px]"
               />
@@ -218,144 +177,11 @@ export default function SearchPanel({
           </div>
         </TabsContent>
         
+        {/*
         <TabsContent value="filter" className="space-y-4 mt-2">
-          <div className="space-y-4">
-            <div className="border p-3 rounded-md bg-secondary/30">
-              <h3 className="text-sm font-medium flex items-center gap-2 mb-2">
-                <BarChart className="h-4 w-4" />
-                Период для аналитики сообщений
-              </h3>
-              <DateRangePicker
-                dateRange={filterSearch.dateRange}
-                onDateRangeChange={handleFilterDateRangeChange}
-              />
-            </div>
-            
-            {additionalControls && (
-              <div className="mt-4">
-                {additionalControls}
-              </div>
-            )}
-            
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium flex items-center gap-1">
-                  <MessageSquare className="h-4 w-4" />
-                  Тип чата
-                </Label>
-                <div className="flex gap-2">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm" className="w-full justify-start">
-                        {filterSearch.channel === undefined && (
-                          <>
-                            <MessageSquare className="h-4 w-4 mr-2" />
-                            <span>Любой</span>
-                          </>
-                        )}
-                        {filterSearch.channel === true && (
-                          <>
-                            <MessageSquare className="h-4 w-4 mr-2" />
-                            <span>Канал</span>
-                          </>
-                        )}
-                        {filterSearch.channel === false && (
-                          <>
-                            <Users className="h-4 w-4 mr-2" />
-                            <span>Беседа</span>
-                          </>
-                        )}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start">
-                      <DropdownMenuItem 
-                        onClick={() => setFilterSearch({ ...filterSearch, channel: undefined })}
-                      >
-                        Любой
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => setFilterSearch({ ...filterSearch, channel: true })}
-                        className="flex items-center gap-2"
-                      >
-                        <MessageSquare className="h-4 w-4" />
-                        <span>Канал</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => setFilterSearch({ ...filterSearch, channel: false })}
-                        className="flex items-center gap-2"
-                      >
-                        <Users className="h-4 w-4" />
-                        <span>Беседа</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label className="text-sm font-medium flex items-center gap-1">
-                  <Globe className="h-4 w-4" />
-                  Открытость
-                </Label>
-                <div className="flex gap-2">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm" className="w-full justify-start">
-                        {filterSearch.public === undefined && (
-                          <>
-                            <Globe className="h-4 w-4 mr-2" />
-                            <span>Любой</span>
-                          </>
-                        )}
-                        {filterSearch.public === true && (
-                          <>
-                            <Globe className="h-4 w-4 mr-2" />
-                            <span>Открытый</span>
-                          </>
-                        )}
-                        {filterSearch.public === false && (
-                          <>
-                            <Lock className="h-4 w-4 mr-2" />
-                            <span>Закрытый</span>
-                          </>
-                        )}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start">
-                      <DropdownMenuItem 
-                        onClick={() => setFilterSearch({ ...filterSearch, public: undefined })}
-                      >
-                        Любой
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => setFilterSearch({ ...filterSearch, public: true })}
-                        className="flex items-center gap-2"
-                      >
-                        <Globe className="h-4 w-4" />
-                        <span>Открытый</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => setFilterSearch({ ...filterSearch, public: false })}
-                        className="flex items-center gap-2"
-                      >
-                        <Lock className="h-4 w-4" />
-                        <span>Закрытый</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-            </div>
-            
-            <Button 
-              onClick={handleFilterSearch} 
-              className="w-full bg-gradient-primary"
-            >
-              <Filter className="mr-2 h-4 w-4" />
-              Применить фильтры
-            </Button>
-          </div>
+          ...
         </TabsContent>
+        */}
 
         <TabsContent value="messages" className="space-y-4 mt-2">
           <div className="space-y-4">

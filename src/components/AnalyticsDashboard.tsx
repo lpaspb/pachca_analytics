@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AnalyticsResult, ChatData, ChatMessage } from '@/types/api';
+import { getMessageReadsCount, getMessageReactionsCount, getThreadMessagesCount, calculateMessageER } from '@/utils/analyticsUtils';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Progress } from '@/components/ui/progress';
@@ -40,6 +41,9 @@ import {
 } from 'lucide-react';
 import { ThemeAwareBarChart, ThemeAwarePieChart } from './ThemeAwareChart';
 
+/**
+ * Пропсы для AnalyticsDashboard
+ */
 interface AnalyticsDashboardProps {
   analytics: AnalyticsResult | null;
   isLoading: boolean;
@@ -59,6 +63,7 @@ interface AnalyticsDashboardProps {
 }
 
 interface AnalyticsDashboardPropsExt extends AnalyticsDashboardProps {
+  /** Флаг поиска по сообщениям */
   isMessageSearch?: boolean;
 }
 
@@ -95,48 +100,7 @@ export default function AnalyticsDashboard({
     }));
   }, [analytics?.topUsers, analytics?.topMessages]);
   
-  const getMessageReadsCount = (message: ChatMessage): number => {
-    if (message.reads_count !== undefined) {
-      return message.reads_count;
-    }
-    
-    if (message.readBy && Array.isArray(message.readBy)) {
-      return message.readBy.length;
-    }
-    
-    return 0;
-  };
-  
-  const getMessageReactionsCount = (message: ChatMessage): number => {
-    if (message.reactions_count !== undefined) {
-      return message.reactions_count;
-    }
-    
-    if (message.reactions) {
-      if (Array.isArray(message.reactions)) {
-        return message.reactions.length;
-      } else {
-        return Object.values(message.reactions).reduce((sum, arr) => sum + (Array.isArray(arr) ? arr.length : 0), 0);
-      }
-    }
-    
-    return 0;
-  };
-  
-  const getThreadMessagesCount = (message: ChatMessage): number => {
-    return message.thread?.messages_count || 0;
-  };
-  
-  const calculateMessageER = (message: ChatMessage): number => {
-    const reads = getMessageReadsCount(message);
-    if (!reads) return 0;
-    
-    const reactions = getMessageReactionsCount(message);
-    const comments = getThreadMessagesCount(message);
-    
-    return ((reactions + comments) / reads) * 100;
-  };
-  
+
   const renderChangeIndicator = (
     percentage: number | undefined, 
     absolute: number | undefined, 

@@ -3,15 +3,25 @@ import { ApiResponse, ChatData, SearchFilters, AnalyticsResult, PachkaUser, Chat
 
 const API_PROXY_URL = '/api/pachka';
 
+/**
+ * Класс для работы с API Пачки (Pachka)
+ */
 class PachkaApi {
   private apiKey: string | null = null;
 
+  /**
+   * Устанавливает API-ключ и валидирует его
+   * @param key API ключ
+   */
   setApiKey(key: string) {
     this.apiKey = key;
     localStorage.setItem('pachka_api_key', key);
     return this.validateApiKey(key);
   }
 
+  /**
+   * Получает текущий API-ключ из памяти или localStorage
+   */
   getApiKey(): string | null {
     if (!this.apiKey) {
       this.apiKey = localStorage.getItem('pachka_api_key');
@@ -19,11 +29,18 @@ class PachkaApi {
     return this.apiKey;
   }
 
+  /**
+   * Очищает API-ключ
+   */
   clearApiKey() {
     this.apiKey = null;
     localStorage.removeItem('pachka_api_key');
   }
 
+  /**
+   * Валидирует API-ключ через запрос к /users
+   * @param key API ключ
+   */
   async validateApiKey(key: string): Promise<ApiResponse> {
     if (!key) {
       return { success: false, error: 'API ключ обязателен' };
@@ -116,6 +133,10 @@ class PachkaApi {
     }
   }
 
+  /**
+   * Поиск чатов/сообщений по фильтрам
+   * @param filters Фильтры поиска
+   */
   async searchChats(filters: SearchFilters): Promise<ApiResponse> {
     if (!this.apiKey) {
       return { success: false, error: 'API ключ не установлен' };
@@ -259,6 +280,10 @@ class PachkaApi {
     }
   }
 
+  /**
+   * Получить чат по ID
+   * @param chatId ID чата
+   */
   async getChatById(chatId: string): Promise<ApiResponse> {
     if (!this.apiKey) {
       return { success: false, error: 'API ключ не установлен' };
@@ -344,6 +369,9 @@ class PachkaApi {
     }
   }
 
+  /**
+   * Получить все сообщения для списка чатов
+   */
   async getAllChatMessages(chats: ChatData[], dateRange?: { from: Date, to: Date }): Promise<ChatMessage[]> {
     if (!chats || chats.length === 0) {
       return [];
@@ -371,6 +399,9 @@ class PachkaApi {
     }
   }
 
+  /**
+   * Получить сообщения одного чата с пагинацией и фильтрацией по датам
+   */
   async getChatMessages(chatId: string, dateRange?: { from: Date, to: Date }): Promise<ApiResponse> {
     if (!this.apiKey) {
       return { success: false, error: 'API ключ не установлен' };
@@ -651,6 +682,9 @@ class PachkaApi {
     }
   }
 
+  /**
+   * Получить всех пользователей (сотрудников)
+   */
   async getAllUsers(): Promise<PachkaUser[]> {
     if (!this.apiKey) {
       console.error('API ключ не установлен');
@@ -706,6 +740,9 @@ class PachkaApi {
     }
   }
 
+  /**
+   * Получить количество сообщений в треде
+   */
   async getThreadMessagesCount(chatId: string | number): Promise<number> {
     if (!this.apiKey) {
       console.error('API ключ не установлен');
@@ -760,6 +797,9 @@ class PachkaApi {
     }
   }
 
+  /**
+   * Получить аналитику по чатам за период
+   */
   async getAnalytics(
     chats: ChatData[], 
     dateRange?: { from: Date, to: Date },
@@ -993,6 +1033,9 @@ class PachkaApi {
     }
   }
 
+  /**
+   * Получить аналитику по одному сообщению
+   */
   async getAnalyticsForSingleMessage(messageId: string): Promise<AnalyticsResult> {
     try {
       console.log('Analyzing single message:', messageId);
@@ -1075,6 +1118,9 @@ class PachkaApi {
     }
   }
 
+  /**
+   * Получить текущего пользователя по API-ключу
+   */
   async getCurrentUser(): Promise<PachkaUser | null> {
     const apiKey = this.getApiKey();
     if (!apiKey) return null;
