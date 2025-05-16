@@ -37,7 +37,8 @@ import {
   Percent, 
   BarChart3, 
   PieChart as PieChartIcon, 
-  Trophy 
+  Trophy,
+  HelpCircle
 } from 'lucide-react';
 import { ThemeAwareBarChart, ThemeAwarePieChart } from './ThemeAwareChart';
 import { Line, Scatter } from 'react-chartjs-2';
@@ -244,7 +245,18 @@ export default function AnalyticsDashboard({
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold">Коэффициент вовлеченности (ER):</span>
-            <span className="text-4xl font-bold">{formatEngagementRate(engagementRate)}</span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-4xl font-bold cursor-help">{formatEngagementRate(engagementRate)}</span>
+                </TooltipTrigger>
+                <TooltipContent className="whitespace-nowrap p-1">
+                  <div className="text-xs">
+                    (Реакции + Коммент) / Просмотры × 100%
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <span className="text-xl font-semibold text-muted-foreground">%</span>
           </div>
         </div>
@@ -288,7 +300,23 @@ export default function AnalyticsDashboard({
                   <TableHead className="text-center">Сообщений</TableHead>
                   <TableHead className="text-center">В тредах</TableHead>
                   <TableHead className="text-center">Реакций</TableHead>
-                  <TableHead className="text-center">Баллы</TableHead>
+                  <TableHead className="text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      Баллы
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="whitespace-nowrap p-1">
+                            <div className="text-xs">
+                              Сообщ + Коммент×0.8 + Реакции×0.25
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -357,7 +385,23 @@ export default function AnalyticsDashboard({
                       {col === 'readers' && 'Просмотры'}
                       {col === 'reactions' && 'Реакции'}
                       {col === 'threadComments' && 'Комментарии'}
-                      {col === 'er' && 'ER (%)'}
+                      {col === 'er' && (
+                        <div className="flex items-center justify-center gap-1">
+                          ER (%)
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent className="whitespace-nowrap p-1">
+                                <div className="text-xs">
+                                  (Реакции + Коммент) / Просмотры × 100%
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      )}
                       <span className="inline-block align-middle ml-1">
                         {sort.column === col ? (
                           sort.direction === 'asc' ? <ArrowUp className="inline w-3 h-3" /> : <ArrowDown className="inline w-3 h-3" />

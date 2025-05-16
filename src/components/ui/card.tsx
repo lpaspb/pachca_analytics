@@ -2,19 +2,31 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+// Обновленная карточка в соответствии с дизайн-системой
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm",
-      className
-    )}
-    {...props}
-  />
-))
+  React.HTMLAttributes<HTMLDivElement> & {
+    variant?: "default" | "elevated" | "low";
+  }
+>(({ className, variant = "default", ...props }, ref) => {
+  const variantClassNames = {
+    default: "bg-card",
+    elevated: "bg-card-high shadow-sm",
+    low: "bg-card-low"
+  };
+
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "rounded-lg border border-border",
+        variantClassNames[variant],
+        className
+      )}
+      {...props}
+    />
+  );
+})
 Card.displayName = "Card"
 
 const CardHeader = React.forwardRef<
@@ -36,7 +48,7 @@ const CardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      "text-2xl font-semibold leading-none tracking-tight",
+      "text-lg font-medium leading-none tracking-tight",
       className
     )}
     {...props}

@@ -91,27 +91,86 @@ export interface MessageReaction {
   code: string;  // Эмодзи код реакции (символ эмодзи)
 }
 
+/**
+ * Статистика по сообщению
+ */
+export interface MessageStat {
+  /** ID сообщения */
+  id: number;
+  /** Текст сообщения */
+  text: string;
+  /** Дата создания сообщения */
+  date: string;
+  /** Количество просмотров */
+  readers: number;
+  /** Количество реакций */
+  reactions: number;
+  /** Количество комментариев в треде */
+  threadComments: number;
+  /** Показатель ER */
+  er: number;
+}
+
+/**
+ * Статистика по дню
+ */
+export interface DayStat {
+  /** Дата */
+  date: string;
+  /** Показатель ER за день */
+  er: number;
+}
+
+/**
+ * Статистика по пользователю
+ */
+export interface UserStat {
+  /** ID пользователя */
+  user_id: number;
+  /** Имя пользователя */
+  name: string;
+  /** URL аватарки пользователя */
+  avatar: string | null;
+  /** Количество сообщений */
+  messages: number;
+  /** Количество сообщений в тредах */
+  threadMessages: number;
+  /** Количество реакций */
+  reactions: number;
+  /** Баллы активности */
+  score: number;
+}
+
+/**
+ * Результат аналитики
+ */
 export interface AnalyticsResult {
+  /** Значение ER в процентах */
   engagementRate?: number;
-  daysStats?: { date: string, er: number }[];
-  topUsers?: Array<{
-    user_id: number;
-    name: string;
-    avatar: string | null;
-    messages: number;
-    threadMessages: number;
-    reactions: number;
-    score: number;
-  }>;
-  messageStats?: Array<{
-    id: number;
-    text: string;
-    date: string;
-    readers: number;
-    reactions: number;
-    threadComments: number;
-    er: number;
-  }>;
+  /** Статистика по сообщениям */
+  messageStats?: MessageStat[];
+  /** Статистика по дням */
+  daysStats?: DayStat[];
+  /** Топ активных пользователей */
+  topUsers?: UserStat[];
+  /** Данные для сравнения с другим периодом */
+  comparison?: {
+    /** Диапазон дат для сравнения */
+    dateRange?: {
+      from: Date;
+      to?: Date;
+    };
+    /** Значение ER в процентах для периода сравнения */
+    engagementRate?: number;
+    /** Разница в процентах между периодами */
+    percentageDifferences?: {
+      engagementRate: number;
+    };
+    /** Абсолютная разница между периодами */
+    absoluteDifferences?: {
+      engagementRate: number;
+    };
+  };
 }
 
 export interface AnalyticsComparison {

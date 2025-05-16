@@ -4,16 +4,17 @@ import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import { SearchFilters, AnalyticsResult, ChatData, ChatMessage } from '@/types/api';
 import { pachkaApi } from '@/services/api';
 import { toast } from 'sonner';
-import SettingsMenu from '@/components/SettingsMenu';
+import HeaderIcons from '@/components/HeaderIcons';
 import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { KeyRound, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { addDays, subDays } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { Progress } from '@/components/ui/progress';
+import { useNavigate } from 'react-router-dom';
 
 import {
   Dialog,
@@ -23,114 +24,16 @@ import {
 } from '@/components/ui/dialog';
 
 const Index = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [searchStarted, setSearchStarted] = useState(false);
   const [analytics, setAnalytics] = useState<AnalyticsResult | null>(null);
   const [chats, setChats] = useState<ChatData[]>([]);
   const [currentFilters, setCurrentFilters] = useState<SearchFilters | null>(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
-  const [apiToken, setApiToken] = useState('');
-  const [tokenError, setTokenError] = useState('');
-  const [isValidatingToken, setIsValidatingToken] = useState(false);
-  const [skipAuth, setSkipAuth] = useState(true);
-  const [connectionIssue, setConnectionIssue] = useState(false);
   const [isComparisonLoading, setIsComparisonLoading] = useState(false);
   const [enableComparison, setEnableComparison] = useState(false);
   const [comparisonDateRange, setComparisonDateRange] = useState<DateRange | undefined>(undefined);
-  const [apiValidationAttempted, setApiValidationAttempted] = useState(false);
-
-  useEffect(() => {
-    if (apiValidationAttempted) {
-      setIsCheckingAuth(false);
-      return;
-    }
-
-    const apiKey = pachkaApi.getApiKey();
-    if (apiKey) {
-      setIsCheckingAuth(true);
-      pachkaApi.validateApiKey(apiKey)
-        .then((result) => {
-          if (result.success) {
-            setIsAuthenticated(true);
-            if (!apiValidationAttempted) {
-              toast.success('Авторизация успешна');
-            }
-            setConnectionIssue(false);
-          } else {
-            console.error('Auth validation failed:', result.error);
-            pachkaApi.clearApiKey();
-            
-            if (!apiValidationAttempted) {
-              toast.error(result.error || 'Ошибка авторизации');
-            }
-            
-            if (result.error && (
-                result.error.includes('Ошибка соединения с сервером') || 
-                result.error.includes('VPN') || 
-                result.error.includes('Получен неверный формат')
-              )) {
-              setConnectionIssue(true);
-            }
-          }
-        })
-        .catch(error => {
-          console.error('Auth validation error:', error);
-          
-          if (!apiValidationAttempted) {
-            toast.error('Не удалось подключиться к API Pachka. Пожалуйста, проверьте подключение к интернету.');
-          }
-          
-          setConnectionIssue(true);
-          pachkaApi.clearApiKey();
-        })
-        .finally(() => {
-          setIsCheckingAuth(false);
-          setApiValidationAttempted(true);
-        });
-    } else {
-      setIsCheckingAuth(false);
-      setApiValidationAttempted(true);
-    }
-  }, []);
-
-  const handleTokenSubmit = async () => {
-    if (!apiToken.trim()) {
-      toast.error('Введите токен API');
-      return;
-    }
-
-    setIsValidatingToken(true);
-    setTokenError('');
-    setConnectionIssue(false);
-
-    try {
-      const result = await pachkaApi.setApiKey(apiToken);
-      if (result.success) {
-        toast.success('Авторизация успешна');
-        setIsAuthenticated(true);
-      } else {
-        setTokenError(result.error || 'Неверный токен API');
-        toast.error(result.error || 'Ошибка авторизации');
-        
-        if (result.error && (
-            result.error.includes('Ошибка соединения с сервером') || 
-            result.error.includes('VPN') || 
-            result.error.includes('Получен неверный формат')
-          )) {
-          setConnectionIssue(true);
-        }
-      }
-    } catch (error) {
-      console.error('Token validation error:', error);
-      setTokenError('Ошибка при проверке токена');
-      setConnectionIssue(true);
-      toast.error('Не удалось проверить токен');
-    } finally {
-      setIsValidatingToken(false);
-    }
-  };
+  const navigate = useNavigate();
 
   const handleSearch = async (filters: SearchFilters) => {
     setIsLoading(true);
@@ -296,7 +199,7 @@ const Index = () => {
   const fetchComparisonData = async (
     comparisonFilters: SearchFilters, 
     currentAnalytics: AnalyticsResult, 
-    toastId: string
+    toastId: string | number
   ) => {
     try {
       const chatIds = comparisonFilters.chatIds || (comparisonFilters.chatId ? [comparisonFilters.chatId] : []);
@@ -384,86 +287,16 @@ const Index = () => {
 
   const handleLogout = () => {
     pachkaApi.clearApiKey();
-    setIsAuthenticated(false);
-    setAnalytics(null);
-    setChats([]);
-    setSearchStarted(false);
-    setSkipAuth(true);
+    navigate('/login');
   };
-
-  if (isCheckingAuth) {
-    return (
-      <div className="flex items-center justify-center h-screen animate-fade-in">
-        <div className="w-8 h-8 border-t-2 border-b-2 border-primary rounded-full animate-spin"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background animate-fade-in">
-      {(!isAuthenticated && !isCheckingAuth) && (
-        <Dialog open={true} onOpenChange={() => {}}>
-          <DialogContent hideCloseButton>
-            <DialogHeader>
-              <div className="flex flex-col items-center gap-2">
-                <KeyRound className="w-8 h-8 text-primary mb-1" />
-                <h2 className="text-lg font-semibold">Введите API токен Пачки</h2>
-                <p className="text-sm text-muted-foreground text-center">
-                  Для доступа к аналитике требуется ваш персональный API токен. Получить его можно в настройках Пачки.
-                </p>
-              </div>
-            </DialogHeader>
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                setIsValidatingToken(true);
-                setTokenError('');
-                const result = await pachkaApi.validateApiKey(apiToken.trim());
-                setIsValidatingToken(false);
-                if (result.success) {
-                  setIsAuthenticated(true);
-                  pachkaApi.setApiKey(apiToken.trim());
-                  toast.success('Авторизация успешна');
-                } else {
-                  setTokenError(result.error || 'Некорректный токен');
-                }
-              }}
-              className="space-y-4 mt-2"
-            >
-              <Input
-                autoFocus
-                placeholder="API токен"
-                value={apiToken}
-                onChange={e => setApiToken(e.target.value)}
-                className="w-full"
-                disabled={isValidatingToken}
-              />
-              {tokenError && (
-                <div className="text-sm text-destructive text-center flex items-center gap-1 justify-center">
-                  <AlertCircle className="w-4 h-4" />
-                  {tokenError}
-                </div>
-              )}
-              <DialogFooter>
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-primary"
-                  disabled={!apiToken.trim() || isValidatingToken}
-                  loading={isValidatingToken}
-                >
-                  Войти
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      )}
-      
       <div className="container max-w-6xl mx-auto p-4">
         <div className="flex items-center justify-between mb-6 animate-slide-up">
-          <h1 className="text-2xl font-bold">Аналитика чатов</h1>
+          <h1 className="text-2xl font-bold">Аналитика активности</h1>
           <div className="flex items-center gap-3">
-            <SettingsMenu onLogout={handleLogout} />
+            <HeaderIcons onLogout={handleLogout} />
           </div>
         </div>
         
@@ -502,7 +335,7 @@ const Index = () => {
                 loadingProgress={loadingProgress}
                 chats={chats}
                 dateRange={currentFilters?.dateRange}
-                searchStarted={searchStarted || skipAuth || isAuthenticated}
+                searchStarted={searchStarted}
                 isComparisonLoading={isComparisonLoading}
                 onCompareWithPreviousPeriod={handleCompareWithPreviousPeriod}
                 enableComparison={enableComparison}

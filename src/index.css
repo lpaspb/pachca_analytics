@@ -1,67 +1,116 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 220 10% 10%;
+    /* Основные цвета из дизайн-системы Пачка */
+    --background: 0 0% 100%; /* gray1 #FFFFFF */
+    --background-secondary: 220 33% 97%; /* gray2 #F7F8FC */
+    --foreground: 220 10% 10%; /* gray12 #323437 */
     
-    --card: 0 0% 100%;
-    --card-foreground: 220 10% 10%;
+    --card: 0 0% 100%; /* gray1 #FFFFFF */
+    --card-foreground: 220 10% 10%; /* gray12 #323437 */
+    --card-low: 0 0% 100%; /* gray1 #FFFFFF */
+    --card-high: 220 33% 97%; /* gray2 #F7F8FC */
     
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 10% 10%;
+    --primary: 240 100% 56%; /* primary9 #4254FF */
+    --primary-foreground: 0 0% 100%; /* white #FFFFFF */
+    --primary-soft: 240 100% 95%; /* primary3 #F0F4FF */
+    --primary-accent: 240 100% 60%; /* primary10 #3C40ED */
     
-    --primary: 252 59% 48%;
-    --primary-foreground: 0 0% 100%;
+    --secondary: 210 20% 96%; /* gray3 #F0F1F5 */
+    --secondary-foreground: 220 10% 10%; /* gray12 #323437 */
     
-    --secondary: 210 20% 96%;
-    --secondary-foreground: 220 10% 10%;
+    --muted: 220 11% 73%; /* gray11 #6F7778 */
+    --muted-foreground: 220 10% 40%; /* gray9 #8C9092 */
+    --muted-icon: 220 8% 57%; /* gray9 #8C9092 */
     
-    --muted: 210 20% 94%;
-    --muted-foreground: 220 10% 40%;
+    --accent: 220 7% 90%; /* gray3 #E3E4E8 */
+    --accent-foreground: 220 10% 10%; /* gray12 #323437 */
+    --accent-elevated: 220 7% 95%; /* gray3 с повышенной яркостью */
     
-    --accent: 210 20% 94%;
-    --accent-foreground: 220 10% 10%;
+    --destructive: 0 83% 62%; /* error11 #EE6B6B */
+    --destructive-foreground: 0 0% 100%; /* white #FFFFFF */
+    --destructive-accent: 0 75% 58%; /* error9 #E5484D */
     
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
+    --border: 220 7% 90%; /* gray6 #E3E4E8 */
+    --input: 220 7% 90%; /* gray6 #E3E4E8 */
+    --ring: 240 100% 56%; /* primary9 #4254FF */
     
-    --border: 220 10% 80%;
-    --input: 220 10% 80%;
-    --ring: 252 59% 48%;
+    /* Дополнительные цвета */
+    --tooltip: 220 13% 9%; /* gray12 #323437 */
+    --tooltip-foreground: 210 20% 98%; /* white #FFFFFF */
+    
+    /* Цвета для всплывающих окон */
+    --popover: 0 0% 100%; /* gray1 #FFFFFF */
+    --popover-foreground: 220 10% 10%; /* gray12 #323437 */
+    
+    --green: 142 76% 36%; /* green11 #30D394 */
+    --purple: 271 81% 56%; /* purple11 #8739E5 */
+    --yellow: 38 92% 50%; /* yellow1 #FFAD3E */
+    --warning: 38 92% 50%; /* yellow1 #FFAD3E */
+
+    /* Цвета для кнопок из дизайн-системы */
+    --button: 0 0% 100%; /* gray1 #FFFFFF */
+    --button-accent: 220 7% 90%; /* gray2 #F7F8FC */
+    --button-disabled: 220 7% 90%; /* gray3 #F0F1F5 */
+    --button-icon-accent: 0 0% 4%; /* black-04% #00000000 */
   }
 
   .dark {
-    --background: 220 10% 10%;
-    --foreground: 210 20% 98%;
+    /* Темная тема из дизайн-системы Пачка */
+    --background: 225 10% 12%; /* gray1 #191D1E */
+    --background-secondary: 225 10% 12%; /* gray2 #202324 */
+    --foreground: 0 0% 93%; /* white #EDEDED */
     
-    --card: 220 10% 14%;
-    --card-foreground: 210 20% 98%;
+    --card: 225 9% 14%; /* gray2 #202324 */
+    --card-foreground: 0 0% 93%; /* white #EDEDED */
+    --card-low: 225 10% 12%; /* gray1 #191D1E */
+    --card-high: 225 9% 17%; /* gray3 #252928 */
     
-    --popover: 220 10% 12%;
-    --popover-foreground: 210 20% 98%;
+    --primary: 240 100% 56%; /* primary9 #4254FF */
+    --primary-foreground: 0 0% 100%; /* white #FFFFFF */
+    --primary-soft: 225 11% 15%; /* primary3 темная версия */
+    --primary-accent: 240 100% 60%; /* primary10 #3C40ED */
     
-    --primary: 252 59% 48%;
-    --primary-foreground: 0 0% 100%;
+    --secondary: 225 9% 17%; /* gray3 #252928 */
+    --secondary-foreground: 0 0% 93%; /* white #EDEDED */
     
-    --secondary: 220 10% 18%;
-    --secondary-foreground: 210 20% 98%;
+    --muted: 225 5% 31%; /* gray11 #9AA0A6 */
+    --muted-foreground: 220 5% 47%; /* gray9 #687176 */
+    --muted-icon: 220 5% 47%; /* gray9 #687176 */
     
-    --muted: 220 10% 16%;
-    --muted-foreground: 210 20% 65%;
+    --accent: 225 9% 17%; /* gray3 #252928 */
+    --accent-foreground: 0 0% 93%; /* white #EDEDED */
+    --accent-elevated: 225 9% 20%; /* gray4 #2E3132 */
     
-    --accent: 220 10% 16%;
-    --accent-foreground: 210 20% 98%;
+    --destructive: 0 83% 62%; /* error11 #EE6B6B */
+    --destructive-foreground: 0 0% 93%; /* white #EDEDED */
+    --destructive-accent: 0 75% 58%; /* error9 #E5484D */
     
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
+    --border: 225 8% 20%; /* gray6 #313538 */
+    --input: 225 9% 18%; /* gray5 #2E3132 */
+    --ring: 240 100% 56%; /* primary9 #4254FF */
     
-    --border: 220 10% 20%;
-    --input: 220 10% 18%;
-    --ring: 252 59% 48%;
+    /* Дополнительные цвета */
+    --tooltip: 225 7% 19%; /* gray6 #313538 */
+    --tooltip-foreground: 0 0% 93%; /* white #EDEDED */
+    
+    /* Цвета для всплывающих окон */
+    --popover: 225 9% 14%; /* gray2 #202324 */
+    --popover-foreground: 0 0% 93%; /* white #EDEDED */
+    
+    --green: 142 76% 36%; /* green11 #30D394 */
+    --purple: 271 81% 56%; /* purple11 #8739E5 */
+    --yellow: 38 92% 50%; /* yellow1 #FFAD3E */
+    --warning: 38 92% 50%; /* yellow1 #FFAD3E */
+
+    /* Цвета для кнопок из дизайн-системы */
+    --button: 225 5% 11%; /* gray1-10% #9AA0A61A */
+    --button-accent: 225 5% 31%; /* gray2 #9AA0A6 */
+    --button-disabled: 225 9% 14%; /* gray2 #202324 */
+    --button-icon-accent: 225 5% 31%; /* gray11-10% #9AA0A61A */
   }
 }
 
@@ -71,30 +120,149 @@
   }
   
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans text-base antialiased;
+  }
+
+  h1, .h1 {
+    @apply text-2xl font-semibold;
+  }
+
+  h2, .h2 {
+    @apply text-xl font-semibold;
+  }
+
+  h3, .h3 {
+    @apply text-lg font-medium;
+  }
+
+  h4, .h4 {
+    @apply text-base font-medium;
+  }
+
+  h5, .h5 {
+    @apply text-sm font-medium;
+  }
+
+  code {
+    @apply font-mono text-xs;
   }
 }
 
-.bg-gradient-primary {
-  @apply bg-gradient-to-r from-indigo-600 to-violet-600;
+/* Компоненты и классы для уведомлений (Notification Alert) из дизайн-системы */
+.alert-info {
+  @apply bg-primary-soft text-foreground rounded-md p-4;
 }
 
-.stat-card {
-  @apply bg-card rounded-lg p-5 border border-border;
+.alert-warning {
+  @apply bg-warning/10 text-warning rounded-md p-4;
 }
 
-.sidebar {
-  @apply flex flex-col h-screen border-r border-border bg-background;
-  min-width: 260px;
-  max-width: 260px;
+.alert-error {
+  @apply bg-destructive/10 text-destructive rounded-md p-4;
 }
 
-.content-area {
-  @apply flex-1 h-screen overflow-y-auto;
+/* Бейджи из дизайн-системы */
+.badge {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
 }
 
-.search-container {
-  @apply flex flex-col gap-5 p-6 bg-card rounded-lg border border-border;
+.badge-primary {
+  @apply bg-primary text-primary-foreground;
+}
+
+.badge-secondary {
+  @apply bg-secondary text-secondary-foreground;
+}
+
+.badge-outline {
+  @apply border border-border text-foreground;
+}
+
+.badge-dot {
+  @apply w-2 h-2 rounded-full;
+}
+
+/* Табы из дизайн-системы */
+.tabs {
+  @apply flex border-b border-border;
+}
+
+.tab {
+  @apply px-3 py-2 text-sm font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground;
+}
+
+.tab-active {
+  @apply border-primary text-foreground;
+}
+
+/* Стили для таблиц в стиле Пачка */
+.pachka-table-avatar {
+  @apply w-8 h-8 rounded-full mr-2 inline-block align-middle;
+}
+
+.pachka-table-row-with-avatar {
+  @apply flex items-center;
+}
+
+.pachka-table-name {
+  @apply font-medium;
+}
+
+.pachka-table-badge {
+  @apply inline-flex ml-2 w-4 h-4 bg-green-400 rounded-full text-xs text-white justify-center items-center;
+}
+
+/* Скролл из дизайн-системы */
+.scrollbar-pachka {
+  @apply scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent;
+}
+
+/* Файловые карточки из дизайн-системы */
+.file-card {
+  @apply flex items-center p-3 bg-card border border-border rounded-md;
+}
+
+.file-icon {
+  @apply rounded-md w-8 h-8 flex items-center justify-center text-white;
+}
+
+.audio-player {
+  @apply flex items-center p-3 bg-card border border-border rounded-md;
+}
+
+/* Классы для формирования чата */
+.chat-message {
+  @apply p-4 rounded-lg max-w-xl;
+}
+
+.chat-message-own {
+  @apply bg-primary-soft;
+}
+
+.chat-message-other {
+  @apply bg-card-high;
+}
+
+.chat-input {
+  @apply border border-border rounded-md p-2 w-full;
+}
+
+/* Дополнительные утилиты для форм */
+.input-has-value {
+  @apply border-primary/70 bg-background text-foreground;
+}
+
+/* Стили для всплывающих элементов */
+.rdp {
+  @apply bg-card border border-border rounded-md shadow-lg;
+}
+
+.rdp-month {
+  @apply bg-card;
+}
+
+[data-radix-popper-content-wrapper] {
+  @apply backdrop-blur-none !important;
 }
 
 /* Animation utilities */
