@@ -1259,6 +1259,29 @@ export default function AnalyticsDashboard({
 
   return (
     <div className="flex flex-col gap-4 animate-fade-in">
+      {analytics && (
+        <div className="flex items-center gap-3 bg-primary/10 border border-primary/20 rounded-lg px-4 py-3 mb-4">
+          <Gauge className="w-6 h-6 text-primary" />
+          <div>
+            <div className="text-xs text-muted-foreground flex items-center gap-1">
+              Общий ER
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent className="whitespace-pre-line p-2 max-w-xs er-tooltip">
+                    <div className="text-xs text-left">
+                      <b>Общий коэффициент вовлечённости (ER)</b> — среднее значение ER по всем сообщениям за выбранный период или по чату. Показывает, какой процент прочитавших проявил активность (реакция, комментарий).
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <div className="text-3xl font-bold text-primary">{formatEngagementRate(analytics.engagementRate)}%</div>
+          </div>
+        </div>
+      )}
       {(!isLoading && loadingProgress >= 100) && (
         <>
           {/* Топ пользователей */}
