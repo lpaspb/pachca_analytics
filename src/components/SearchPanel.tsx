@@ -209,7 +209,7 @@ export default function SearchPanel({
         <TabsList className="grid grid-cols-2 bg-secondary w-full overflow-hidden rounded-md">
           <TabsTrigger value="simple" className="flex items-center gap-2 w-full justify-center text-center transition-all duration-200">
             <Search className="h-4 w-4" />
-            <span>По чату за период</span>
+            <span>По чату</span>
           </TabsTrigger>
           <TabsTrigger value="messages" className="flex items-center gap-2 w-full justify-center text-center transition-all duration-200">
             <MessagesSquare className="h-4 w-4" />
