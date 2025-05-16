@@ -58,12 +58,15 @@ const Index = () => {
       }
       
       if (filters.messageIds && filters.messageIds.length > 0) {
-        console.log('Analyzing multiple messages:', filters.messageIds);
+        const uniqueMessageIds = Array.from(new Set(filters.messageIds));
+        console.log('Analyzing multiple messages:', uniqueMessageIds);
         let combinedAnalytics: AnalyticsResult = { engagementRate: 0, messageStats: [] };
         let sumER = 0;
         let count = 0;
-        for (const messageId of filters.messageIds) {
-          const messageAnalytics = await pachkaApi.getAnalyticsForSingleMessage(messageId);
+        const analyticsResults = await Promise.all(
+          uniqueMessageIds.map(messageId => pachkaApi.getAnalyticsForSingleMessage(messageId))
+        );
+        for (const messageAnalytics of analyticsResults) {
           if (typeof messageAnalytics.engagementRate === 'number') {
             sumER += messageAnalytics.engagementRate;
             count++;
@@ -71,7 +74,6 @@ const Index = () => {
           if (messageAnalytics && messageAnalytics.messageStats && messageAnalytics.messageStats.length > 0) {
             combinedAnalytics.messageStats.push(...messageAnalytics.messageStats);
           }
-          setLoadingProgress(5 + Math.floor((count / filters.messageIds.length) * 95));
         }
         combinedAnalytics.engagementRate = count > 0 ? sumER / count : 0;
         setAnalytics(combinedAnalytics);
@@ -81,14 +83,16 @@ const Index = () => {
         return;
       }
 
-      const chatIds = filters.chatIds || (filters.chatId ? [filters.chatId] : []);
+      const chatIds = Array.from(new Set(filters.chatIds || (filters.chatId ? [filters.chatId] : [])));
       if (chatIds.length > 0) {
-        const allChats: ChatData[] = [];
-        for (const chatId of chatIds) {
-          const response = await pachkaApi.searchChats({
+        const chatResponses = await Promise.all(
+          chatIds.map(chatId => pachkaApi.searchChats({
             ...filters,
             chatId: String(chatId)
-          });
+          }))
+        );
+        const allChats: ChatData[] = [];
+        for (const response of chatResponses) {
           if (response.success && response.data) {
             const chatsWithStringIds = response.data.map(chat => ({
               ...chat,
@@ -202,7 +206,7 @@ const Index = () => {
     toastId: string | number
   ) => {
     try {
-      const chatIds = comparisonFilters.chatIds || (comparisonFilters.chatId ? [comparisonFilters.chatId] : []);
+      const chatIds = Array.from(new Set(comparisonFilters.chatIds || (comparisonFilters.chatId ? [comparisonFilters.chatId] : [])));
       
       if (chatIds.length === 0) {
         toast.dismiss(toastId);
@@ -210,14 +214,14 @@ const Index = () => {
         return;
       }
 
-      const comparisonChats: ChatData[] = [];
-      
-      for (const chatId of chatIds) {
-        const chatResponse = await pachkaApi.searchChats({
+      const chatResponses = await Promise.all(
+        chatIds.map(chatId => pachkaApi.searchChats({
           ...comparisonFilters,
           chatId: String(chatId)
-        });
-        
+        }))
+      );
+      const comparisonChats: ChatData[] = [];
+      for (const chatResponse of chatResponses) {
         if (chatResponse.success && chatResponse.data) {
           const chatsWithStringIds = chatResponse.data.map(chat => ({
             ...chat,

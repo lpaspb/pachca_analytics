@@ -1,7 +1,7 @@
 import * as React from "react";
 import { CalendarIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
-import { addDays, format } from "date-fns";
+import { addDays, format, differenceInCalendarDays } from "date-fns";
 import { ru } from "date-fns/locale";
 
 import { cn } from "@/lib/utils";
@@ -24,6 +24,18 @@ export function DateRangePicker({
   onDateRangeChange,
   className,
 }: DateRangePickerProps) {
+  function handleSelect(range: DateRange | undefined) {
+    if (range?.from && range?.to) {
+      const days = differenceInCalendarDays(range.to, range.from);
+      if (days > 30) {
+        const limitedTo = addDays(range.from, 30);
+        onDateRangeChange({ from: range.from, to: limitedTo });
+        return;
+      }
+    }
+    onDateRangeChange(range);
+  }
+
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover>
@@ -57,11 +69,22 @@ export function DateRangePicker({
             mode="range"
             defaultMonth={dateRange?.from}
             selected={dateRange}
-            onSelect={onDateRangeChange}
+            onSelect={handleSelect}
             numberOfMonths={2}
             locale={ru}
             className={cn("p-3 pointer-events-auto bg-card")}
+            disabled={(date) => {
+              if (!dateRange?.from) return false;
+              const from = dateRange.from;
+              return (
+                differenceInCalendarDays(date, from) > 30 ||
+                differenceInCalendarDays(from, date) > 30
+              );
+            }}
           />
+          <div className="text-xs text-muted-foreground px-4 pb-2 pt-1">
+            Максимальный период — 1 месяц
+          </div>
         </PopoverContent>
       </Popover>
     </div>

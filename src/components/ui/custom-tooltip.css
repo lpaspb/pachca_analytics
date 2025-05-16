@@ -1,0 +1,22 @@
+/* Переопределение стилей для тултипов */
+[data-radix-popper-content-wrapper] {
+  backdrop-filter: none !important;
+  opacity: 1 !important;
+}
+
+.TooltipContent {
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  background-color: var(--tooltip);
+  color: var(--tooltip-foreground);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Дополнительный стиль для тултипов в таблице ER */
+.er-tooltip {
+  background-color: #323437 !important;
+  color: white !important;
+  opacity: 1 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+} 

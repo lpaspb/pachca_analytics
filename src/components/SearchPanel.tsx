@@ -71,7 +71,7 @@ export default function SearchPanel({
     }
   }, []);
 
-  const defaultFrom = addDays(new Date(), -30);
+  const defaultFrom = addDays(new Date(), -7);
   const defaultTo = new Date();
   
   const [simpleSearch, setSimpleSearch] = useState({
@@ -209,11 +209,11 @@ export default function SearchPanel({
         <TabsList className="grid grid-cols-2 bg-secondary w-full overflow-hidden rounded-md">
           <TabsTrigger value="simple" className="flex items-center gap-2 w-full justify-center text-center transition-all duration-200">
             <Search className="h-4 w-4" />
-            <span>По ID чата</span>
+            <span>По чату за период</span>
           </TabsTrigger>
           <TabsTrigger value="messages" className="flex items-center gap-2 w-full justify-center text-center transition-all duration-200">
             <MessagesSquare className="h-4 w-4" />
-            <span>По ID сообщения</span>
+            <span>По сообщению</span>
           </TabsTrigger>
         </TabsList>
         
@@ -252,7 +252,7 @@ export default function SearchPanel({
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Введите только один ID чата
+                  Введите только один ID чата. Его можно скопировать, нажав на три точки справа вверху чата → «Скопировать ID чата».
                 </p>
               </div>
               

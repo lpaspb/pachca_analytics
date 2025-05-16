@@ -1044,9 +1044,11 @@ class PachkaApi {
           .filter(msg => msg.thread && msg.thread.chat_id && (!('parent_message_id' in msg) || !msg.parent_message_id))
           .map(msg => msg.thread.chat_id.toString())
       ));
-      // Для каждого такого треда получаем все сообщения (без dateRange) и учитываем их в userStats
-      for (const threadChatId of threadChatIds) {
-        const threadMessagesResponse = await this.getChatMessages(threadChatId);
+      // --- Параллельная обработка сообщений в тредах ---
+      const threadMessagesResponses = await Promise.all(
+        threadChatIds.map(threadChatId => this.getChatMessages(threadChatId))
+      );
+      threadMessagesResponses.forEach(threadMessagesResponse => {
         if (threadMessagesResponse.success && Array.isArray(threadMessagesResponse.data)) {
           threadMessagesResponse.data.forEach((threadMsg: any) => {
             if (threadMsg.user_id) {
@@ -1055,10 +1057,13 @@ class PachkaApi {
             }
           });
         }
-      }
-      // Считаем реакции
-      for (const msg of allMessages) {
-        const reactionsResponse = await this.getMessageReactions(msg.id.toString());
+      });
+      // --- Параллельная обработка реакций ---
+      const reactionsResponses = await Promise.all(
+        allMessages.map(msg => this.getMessageReactions(msg.id.toString()))
+      );
+      allMessages.forEach((msg, idx) => {
+        const reactionsResponse = reactionsResponses[idx];
         if (reactionsResponse.success && reactionsResponse.data) {
           const reactions = reactionsResponse.data as MessageReaction[];
           reactions.forEach(reaction => {
@@ -1068,7 +1073,7 @@ class PachkaApi {
             }
           });
         }
-      }
+      });
       // Считаем score
       Object.values(userStats).forEach(stat => {
         stat.score = stat.messages * 1 + stat.threadMessages * 0.8 + stat.reactions * 0.25;
