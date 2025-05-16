@@ -8,7 +8,11 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+<<<<<<< HEAD
     allowedHosts: ['all'],
+=======
+    allowedHosts: ['all', 'pachcaanalytics-1-lpaspb97.replit.app'],
+>>>>>>> 67bf42b709d512f27a2d8f3ab60b6268be9ea013
     proxy: {
       '/api/pachka': {
         target: 'https://api.pachca.com',
