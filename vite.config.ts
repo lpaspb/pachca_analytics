@@ -7,7 +7,7 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    host: "0.0.0.0",
     port: 8080,
     https: true,
     allowedHosts: ['all', 'pachcaanalytics-1-lpaspb97.replit.app', 'analytics.takocrm.ru'],
