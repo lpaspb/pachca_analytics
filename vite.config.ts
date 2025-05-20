@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-    allowedHosts: ['all', 'pachcaanalytics-1-lpaspb97.replit.app'],
+    allowedHosts: ['all', 'pachcaanalytics-1-lpaspb97.replit.app', 'analytics.takocrm.ru'],
     proxy: {
       '/api/pachka': {
         target: 'https://api.pachca.com',
