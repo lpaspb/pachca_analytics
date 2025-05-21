@@ -1,17 +1,29 @@
-
 import { utils, writeFile } from 'xlsx';
 import { ChatMessage, AnalyticsResult, MessageReaction } from '@/types/api';
 import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 interface ExcelRow {
   'Дата': string;
   'Сообщение': string;
   'Прочтения': number;
-  'Реакции': number;
-  'Комментарии': number;
+  'Поставившие реакцию': number;
+  'Написавшие комментарий': number;
   'ER (%)': string;
   'Msg ID': string;
   'Chat ID': string | number;
+}
+
+// Расширяем тип AnalyticsResult для поддержки дополнительных свойств,
+// которые могут присутствовать в объекте, но не объявлены в типе
+interface ExtendedAnalyticsResult extends AnalyticsResult {
+  totalReads?: number;
+  totalReactions?: number;
+}
+
+// Расширяем тип ChatMessage для поддержки дополнительного поля er
+interface ExtendedMessage extends ChatMessage {
+  er?: number;
 }
 
 export const exportToExcel = (messages: ChatMessage[], analytics: AnalyticsResult) => {
@@ -23,11 +35,17 @@ export const exportToExcel = (messages: ChatMessage[], analytics: AnalyticsResul
   console.log('Processing messages for Excel export:', messages.length, 'messages');
   console.log('Analytics data:', analytics);
 
+  // Приведение типа к расширенному типу для доступа к дополнительным свойствам
+  const extendedAnalytics = analytics as ExtendedAnalyticsResult;
+
   const data: ExcelRow[] = messages.map(message => {
+    // Приводим сообщение к расширенному типу для доступа к er
+    const extendedMessage = message as ExtendedMessage;
+    
     // Get date and content
     const createdAt = message.created_at || message.createdAt || '';
     const formattedDate = createdAt 
-      ? format(new Date(createdAt), 'dd.MM.yyyy HH:mm')
+      ? format(new Date(createdAt), 'dd.MM.yyyy HH:mm', { locale: ru })
       : '-';
     
     const chatId = message.thread?.chat_id || message.chat_id || '';
@@ -41,8 +59,8 @@ export const exportToExcel = (messages: ChatMessage[], analytics: AnalyticsResul
     }
     
     // Fix if not available: use global analytics data to estimate reads
-    if (readsCount === 0 && analytics?.totalReads && messages.length === 1) {
-      readsCount = analytics.totalReads;
+    if (readsCount === 0 && extendedAnalytics.totalReads && messages.length === 1) {
+      readsCount = extendedAnalytics.totalReads;
       console.log('Using global analytics for reads:', readsCount);
     }
     
@@ -61,24 +79,28 @@ export const exportToExcel = (messages: ChatMessage[], analytics: AnalyticsResul
     }
     
     // Fix if not available: use global analytics data to estimate reactions
-    if (reactionsCount === 0 && analytics?.totalReactions && messages.length === 1) {
-      reactionsCount = analytics.totalReactions;
+    if (reactionsCount === 0 && extendedAnalytics.totalReactions && messages.length === 1) {
+      reactionsCount = extendedAnalytics.totalReactions;
       console.log('Using global analytics for reactions:', reactionsCount);
     }
     
     // Get comments count
     const commentsCount = message.thread?.messages_count || 0;
     
-    // Calculate total interactions and engagement rate
-    const totalInteractions = reactionsCount + commentsCount;
-    const er = readsCount > 0 ? (totalInteractions / readsCount) * 100 : 0;
+    // Используем предварительно вычисленное значение ER, если оно доступно
+    // Иначе рассчитываем его по формуле
+    let er = extendedMessage.er;
+    if (er === undefined) {
+      const totalInteractions = reactionsCount + commentsCount;
+      er = readsCount > 0 ? (totalInteractions / readsCount) * 100 : 0;
+    }
     
     return {
       'Дата': formattedDate,
       'Сообщение': message.content || '',
       'Прочтения': readsCount,
-      'Реакции': reactionsCount,
-      'Комментарии': commentsCount,
+      'Поставившие реакцию': reactionsCount,
+      'Написавшие комментарий': commentsCount,
       'ER (%)': `${er.toFixed(2)}`,
       'Msg ID': message.id,
       'Chat ID': chatId,
@@ -97,11 +119,11 @@ const writeExcelFile = (data: ExcelRow[], sheetName: string): string => {
 
   // Auto-fit columns
   const colWidths = [
-    { wch: 18 },   // Дата
-    { wch: 50 },   // Сообщение
-    { wch: 10 },   // Прочтения
-    { wch: 10 },   // Реакции
-    { wch: 12 },   // Комментарии
+    { wch: 20 },   // Дата
+    { wch: 30 },   // Сообщение
+    { wch: 12 },   // Прочтения
+    { wch: 20 },   // Поставившие реакцию
+    { wch: 25 },   // Написавшие комментарий
     { wch: 10 },   // ER (%)
     { wch: 10 },   // Msg ID
     { wch: 10 },   // Chat ID

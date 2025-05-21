@@ -254,6 +254,7 @@ export default function AnalyticsDashboard({
       reactions: [],
       user_id: undefined,
       createdAt: msg.date,
+      er: msg.er // Добавляем значение ER из таблицы
     }));
       
       // Показываем сообщение о начале экспорта при большом объеме данных
@@ -1272,7 +1273,7 @@ export default function AnalyticsDashboard({
                   </TooltipTrigger>
                   <TooltipContent className="whitespace-pre-line p-2 max-w-xs er-tooltip">
                     <div className="text-xs text-left">
-                      <b>Общий коэффициент вовлечённости (ER)</b> — среднее значение ER по всем сообщениям за выбранный период или по чату. Показывает, какой процент прочитавших проявил активность (реакция, комментарий).
+                      <b>Общий коэффициент вовлечённости (ER)</b> — среднее значение ER по всем сообщениям за выбранный период или по чату. Показывает, какой процент прочитавших проявил активность (реакция, комментарий). При расчёте каждый пользователь, совершивший действие, учитывается только один раз, даже если он оставил и реакцию, и комментарий.
                     </div>
                   </TooltipContent>
                 </Tooltip>
@@ -1402,7 +1403,7 @@ export default function AnalyticsDashboard({
                     </TooltipTrigger>
                     <TooltipContent className="whitespace-pre-line p-2 max-w-xs er-tooltip">
                       <div className="text-xs text-left">
-                        <b>Коэффициент вовлеченности (ER)</b> — это отношение числа пользователей, совершивших действие (реакция, комментарий), к числу прочитавших сообщение. ER помогает оценить, насколько аудитория активно взаимодействует с контентом чата.
+                        <b>Коэффициент вовлеченности (ER)</b> — это отношение числа уникальных пользователей, совершивших действие (реакция, комментарий), к числу прочитавших сообщение. ER помогает оценить, насколько аудитория активно взаимодействует с контентом чата. В расчёте каждый пользователь учитывается только один раз, даже если оставил несколько реакций или комментариев.
                       </div>
                     </TooltipContent>
                   </Tooltip>
@@ -1427,7 +1428,22 @@ export default function AnalyticsDashboard({
                   },
                   scales: {
                     y: { beginAtZero: true, max: 100, title: { display: true, text: 'ER (%)' } },
-                    x: { title: { display: true, text: 'Дата' }, type: 'time', time: { unit: 'day', tooltipFormat: 'yyyy-MM-dd HH:mm' } }
+                    x: { 
+                      title: { display: true, text: 'Дата' }, 
+                      type: 'time', 
+                      time: { 
+                        unit: 'day', 
+                        tooltipFormat: 'dd.MM.yyyy HH:mm',
+                        displayFormats: {
+                          day: 'dd.MM'
+                        }
+                      },
+                      adapters: {
+                        date: {
+                          locale: ru
+                        }
+                      }
+                    }
                   }
                 }} />
                 
@@ -1717,7 +1733,7 @@ export default function AnalyticsDashboard({
                           }}
                         >
                           {col === 'id' && (
-                            <div className="flex items-center justify-center gap-1 py-2">
+                            <div className="flex items-center justify-center gap-1 py-2 w-[60px]">
                               <span>ID</span>
                         {sort.column === col ? (
                                 sort.direction === 'asc' ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />
@@ -1727,7 +1743,7 @@ export default function AnalyticsDashboard({
                             </div>
                           )}
                           {col === 'text' && (
-                            <div className="flex items-center justify-start gap-1 py-2">
+                            <div className="flex items-center justify-start gap-1 py-2 w-[180px]">
                               <span>Сообщение</span>
                               {sort.column === col ? (
                                 sort.direction === 'asc' ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />
@@ -1737,7 +1753,7 @@ export default function AnalyticsDashboard({
                             </div>
                           )}
                           {col === 'date' && (
-                            <div className="flex items-center justify-center gap-1 py-2">
+                            <div className="flex items-center justify-center gap-1 py-2 w-[140px]">
                               <span>Дата</span>
                               {sort.column === col ? (
                                 sort.direction === 'asc' ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />
@@ -1747,7 +1763,7 @@ export default function AnalyticsDashboard({
                             </div>
                           )}
                           {col === 'readers' && (
-                            <div className="flex items-center justify-center gap-1 py-2">
+                            <div className="flex items-center justify-center gap-1 py-2 w-[90px]">
                               <Eye className="w-3.5 h-3.5" />
                               <span>Просмотры</span>
                               {sort.column === col ? (
@@ -1758,9 +1774,9 @@ export default function AnalyticsDashboard({
                             </div>
                           )}
                           {col === 'reactions' && (
-                            <div className="flex items-center justify-center gap-1 py-2">
+                            <div className="flex items-center justify-center gap-1 py-2 w-[160px]">
                               <ThumbsUp className="w-3.5 h-3.5" />
-                              <span>Реакции</span>
+                              <span>Поставившие реакцию</span>
                               {sort.column === col ? (
                                 sort.direction === 'asc' ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />
                               ) : (
@@ -1769,9 +1785,9 @@ export default function AnalyticsDashboard({
                             </div>
                           )}
                           {col === 'threadComments' && (
-                            <div className="flex items-center justify-center gap-1 py-2">
+                            <div className="flex items-center justify-center gap-1 py-2 w-[190px]">
                               <MessageCircle className="w-3.5 h-3.5" />
-                              <span>Комментарии</span>
+                              <span>Написавшие комментарий</span>
                               {sort.column === col ? (
                                 sort.direction === 'asc' ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />
                               ) : (
@@ -1780,7 +1796,7 @@ export default function AnalyticsDashboard({
                             </div>
                           )}
                           {col === 'er' && (
-                            <div className="flex items-center justify-center gap-1 py-2">
+                            <div className="flex items-center justify-center gap-1 py-2 w-[100px]">
                               <Gauge className="w-3.5 h-3.5" />
                               <span>ER (%)</span>
                               <TooltipProvider>
@@ -1790,7 +1806,9 @@ export default function AnalyticsDashboard({
                                   </TooltipTrigger>
                                   <TooltipContent className="whitespace-pre-line p-1 max-w-xs er-tooltip">
                                     <div className="text-xs text-left">
-                                      ER = (Реакции + Комментарии) / Просмотры × 100% Показывает, какой процент прочитавших проявил активность.
+                                      ER = (Уникальные пользователи с активностью) / (Просмотры) × 100%
+                                      
+                                      Показывает, какой процент прочитавших проявил активность (реакция, комментарий). При этом пользователь, оставивший и реакцию, и комментарий, учитывается только один раз.
                                     </div>
                                   </TooltipContent>
                                 </Tooltip>
@@ -1809,27 +1827,31 @@ export default function AnalyticsDashboard({
               <TableBody>
                 {pagedStats.map(msg => (
                       <TableRow key={msg.id} className="hover:bg-primary/5 transition h-[53px]">
-                    <TableCell className="text-center">{msg.id}</TableCell>
-                    <TableCell title={msg.text} className="max-w-[300px] truncate">{msg.text?.slice(0, 60) || msg.id}</TableCell>
-                    <TableCell className="text-center">{msg.date?.slice(0, 16)}</TableCell>
-                    <TableCell className="text-center">{msg.readers}</TableCell>
-                    <TableCell className="text-center">{msg.reactions}</TableCell>
-                    <TableCell className="text-center">{msg.threadComments}</TableCell>
-                    <TableCell className="text-center font-bold text-primary">{msg.er}</TableCell>
+                    <TableCell className="text-center w-[60px]">{msg.id}</TableCell>
+                    <TableCell title={msg.text} className="w-[180px] truncate">{msg.text?.slice(0, 30) || msg.id}</TableCell>
+                    <TableCell className="text-center whitespace-nowrap w-[140px]">
+                      {msg.date ? format(new Date(msg.date), "dd.MM.yyyy HH:mm", { locale: ru }) : "—"}
+                    </TableCell>
+                    <TableCell className="text-center w-[90px]">{msg.readers}</TableCell>
+                    <TableCell className="text-center w-[160px]">{msg.reactions}</TableCell>
+                    <TableCell className="text-center w-[190px]">{msg.threadComments}</TableCell>
+                    <TableCell className="text-center font-bold text-primary w-[100px]">{msg.er}</TableCell>
                     </TableRow>
                 ))}
-                    {/* Добавляем пустые строки, если данных меньше 10 */}
-                    {pagedStats.length > 0 && pagedStats.length < pageSize && Array.from({ length: pageSize - pagedStats.length }).map((_, index) => (
-                      <TableRow key={`empty-${index}`} className="h-[53px] opacity-40 hover:opacity-10 transition-opacity">
-                        <TableCell className="text-center text-muted/30 py-4">·</TableCell>
-                        <TableCell className="text-muted/30 py-4">·</TableCell>
-                        <TableCell className="text-center text-muted/30 py-4">·</TableCell>
-                        <TableCell className="text-center text-muted/30 py-4">·</TableCell>
-                        <TableCell className="text-center text-muted/30 py-4">·</TableCell>
-                        <TableCell className="text-center text-muted/30 py-4">·</TableCell>
-                        <TableCell className="text-center text-muted/30 py-4">·</TableCell>
-                      </TableRow>
-                    ))}
+                    {/* Добавляем пустые строки только для последней страницы, если их всего больше 10 */}
+                    {pagedStats.length > 0 && pagedStats.length < pageSize && sortedStats.length > pageSize && page === totalPages && 
+                      Array.from({ length: pageSize - pagedStats.length }).map((_, index) => (
+                        <TableRow key={`empty-${index}`} className="h-[53px] opacity-40 hover:opacity-10 transition-opacity">
+                          <TableCell className="text-center text-muted/30 py-4 w-[60px]">·</TableCell>
+                          <TableCell className="text-muted/30 py-4 w-[180px]">·</TableCell>
+                          <TableCell className="text-center text-muted/30 py-4 w-[140px]">·</TableCell>
+                          <TableCell className="text-center text-muted/30 py-4 w-[90px]">·</TableCell>
+                          <TableCell className="text-center text-muted/30 py-4 w-[160px]">·</TableCell>
+                          <TableCell className="text-center text-muted/30 py-4 w-[190px]">·</TableCell>
+                          <TableCell className="text-center text-muted/30 py-4 w-[100px]">·</TableCell>
+                        </TableRow>
+                      ))
+                    }
                 {pagedStats.length === 0 && (
                       <>
                         <TableRow className="h-[100px]">
