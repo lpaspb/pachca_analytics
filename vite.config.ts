@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -9,7 +8,7 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-    allowedHosts: ['all', 'pachcaanalytics-1-lpaspb97.replit.app', 'analytics.takocrm.ru'],
+    allowedHosts: ['all', 'pachcaanalytics-1-lpaspb97.replit.app', 'analytics.takocrm.ru', 'analytics.pachca.com'],
     proxy: {
       '/api/pachka': {
         target: 'https://api.pachca.com',
@@ -32,7 +31,7 @@ export default defineConfig(({ mode }) => ({
           proxy.on('proxyRes', (proxyRes, req, _res) => {
             console.log('Received Response:', proxyRes.statusCode, req.url);
             console.log('Content-Type:', proxyRes.headers['content-type'] || 'unknown');
-            
+
             // Force the content type to JSON if it's coming back as HTML
             if (proxyRes.headers['content-type'] && proxyRes.headers['content-type'].includes('text/html')) {
               console.log('Warning: Received HTML instead of JSON, attempting to fix response content type');
