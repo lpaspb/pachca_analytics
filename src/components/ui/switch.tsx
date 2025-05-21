@@ -17,22 +17,22 @@ const Switch = React.forwardRef<
   }
 
   return (
-    <SwitchPrimitives.Root
-      className={cn(
+  <SwitchPrimitives.Root
+    className={cn(
         "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted",
         sizeClasses[size].root,
-        className
-      )}
-      {...props}
-      ref={ref}
-    >
-      <SwitchPrimitives.Thumb
-        className={cn(
+      className
+    )}
+    {...props}
+    ref={ref}
+  >
+    <SwitchPrimitives.Thumb
+      className={cn(
           "pointer-events-none block rounded-full bg-background shadow-lg ring-0 transition-transform",
           sizeClasses[size].thumb
-        )}
-      />
-    </SwitchPrimitives.Root>
+      )}
+    />
+  </SwitchPrimitives.Root>
   )
 })
 Switch.displayName = SwitchPrimitives.Root.displayName

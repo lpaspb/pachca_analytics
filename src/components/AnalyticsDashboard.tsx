@@ -242,19 +242,19 @@ export default function AnalyticsDashboard({
   const handleExportExcel = () => {
     try {
       // Подготавливаем данные для экспорта
-      const messages = sortedStats.map(msg => ({
-        id: msg.id.toString(),
-        content: msg.text,
-        created_at: msg.date,
-        reads_count: msg.readers,
-        reactions_count: msg.reactions,
-        thread: { id: 0, messages_count: msg.threadComments, chat_id: 0 },
-        chat_id: '',
-        readBy: [],
-        reactions: [],
-        user_id: undefined,
-        createdAt: msg.date,
-      }));
+    const messages = sortedStats.map(msg => ({
+      id: msg.id.toString(),
+      content: msg.text,
+      created_at: msg.date,
+      reads_count: msg.readers,
+      reactions_count: msg.reactions,
+      thread: { id: 0, messages_count: msg.threadComments, chat_id: 0 },
+      chat_id: '',
+      readBy: [],
+      reactions: [],
+      user_id: undefined,
+      createdAt: msg.date,
+    }));
       
       // Показываем сообщение о начале экспорта при большом объеме данных
       if (messages.length > 1000) {
@@ -683,7 +683,7 @@ export default function AnalyticsDashboard({
             toast({
               title: `Особый бонус от ${nameText}!`,
               description: (
-                <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
                   <p>{specialBonus.description}</p>
                   <div className="flex gap-2 mt-1">
                     <button 
@@ -727,8 +727,8 @@ export default function AnalyticsDashboard({
                     >
                       Сохранить
                     </button>
-                  </div>
-                </div>
+          </div>
+        </div>
               ),
               variant: "default",
               duration: 6000,
@@ -1285,14 +1285,14 @@ export default function AnalyticsDashboard({
       {(!isLoading && loadingProgress >= 100) && (
         <>
           {/* Топ пользователей */}
-          {analytics?.topUsers && analytics.topUsers.length > 0 && (
+      {analytics?.topUsers && analytics.topUsers.length > 0 && (
             <div className="mt-2">
-              <h3 className="text-base font-semibold mb-2">Топ-10 самых активных пользователей</h3>
-              <div className="overflow-x-auto rounded-lg shadow-md">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-center">Пользователь</TableHead>
+          <h3 className="text-base font-semibold mb-2">Топ-10 самых активных пользователей</h3>
+          <div className="overflow-x-auto rounded-lg shadow-md">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-center">Пользователь</TableHead>
                       <TableHead className="text-center">Сообщения</TableHead>
                       <TableHead className="text-center">Комментарии</TableHead>
                       <TableHead className="text-center">Реакции</TableHead>
@@ -1313,15 +1313,15 @@ export default function AnalyticsDashboard({
                           </TooltipProvider>
                         </div>
                       </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {analytics.topUsers.map((user, idx) => (
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {analytics.topUsers.map((user, idx) => (
                       <TableRow key={user.user_id} 
                         className={`hover:bg-primary/5 transition 
                           ${idx < 3 ? 'animate-pop-top3' : ''}`}
                       >
-                        <TableCell>
+                    <TableCell>
                           <div 
                             className="flex items-center gap-2"
                             onMouseEnter={() => {
@@ -1334,7 +1334,7 @@ export default function AnalyticsDashboard({
                               if (idx === 0) setClapActiveIdx(null);
                             }}
                           >
-                            <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                               <div className={`relative ${idx === 0 ? 'top1-container' : ''}`}>
                                 {idx === 0 && (
                                   <div className="top1-crown">
@@ -1371,24 +1371,24 @@ export default function AnalyticsDashboard({
                                 )}
                               </div>
                             </div>
-                            <span className="font-medium">
-                              {user.name && user.name.trim() !== ''
-                                ? user.name
-                                : user.user_id?.toString() || '—'}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center">{user.messages}</TableCell>
-                        <TableCell className="text-center">{user.threadMessages}</TableCell>
-                        <TableCell className="text-center">{user.reactions}</TableCell>
-                        <TableCell className="text-center font-bold text-primary">{user.score.toFixed(2)}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-          )}
+                        <span className="font-medium">
+                          {user.name && user.name.trim() !== ''
+                            ? user.name
+                            : user.user_id?.toString() || '—'}
+                        </span>
+                        </div>
+                      </TableCell>
+                    <TableCell className="text-center">{user.messages}</TableCell>
+                    <TableCell className="text-center">{user.threadMessages}</TableCell>
+                    <TableCell className="text-center">{user.reactions}</TableCell>
+                    <TableCell className="text-center font-bold text-primary">{user.score.toFixed(2)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+                        </div>
+      )}
 
           {/* График ER */}
           {erChartData && (
@@ -1683,16 +1683,16 @@ export default function AnalyticsDashboard({
             </div>
           )}
 
-          {/* Таблица по каждому сообщению за период */}
-          {analytics?.messageStats && analytics.messageStats.length > 0 && (
+      {/* Таблица по каждому сообщению за период */}
+      {analytics?.messageStats && analytics.messageStats.length > 0 && (
             <div className="mt-8" style={{ overflow: 'visible' }}>
-              <h3 className="text-base font-semibold mb-2 flex items-center gap-4">
-                ER по каждому сообщению за период
-                <Button size="sm" variant="outline" onClick={handleExportExcel} className="ml-auto flex gap-2">
-                  <Download className="w-4 h-4" />
-                  Excel
-                </Button>
-              </h3>
+          <h3 className="text-base font-semibold mb-2 flex items-center gap-4">
+            ER по каждому сообщению за период
+            <Button size="sm" variant="outline" onClick={handleExportExcel} className="ml-auto flex gap-2">
+              <Download className="w-4 h-4" />
+              Excel
+            </Button>
+          </h3>
               <div className="overflow-x-auto rounded-lg shadow-md" style={{ overflow: 'visible' }}>
                 {isSorting && (
                   <div className="flex items-center justify-center py-2 text-muted-foreground text-sm gap-2">
@@ -1702,24 +1702,24 @@ export default function AnalyticsDashboard({
                 )}
                 
                 <Table style={{ overflow: 'visible' }}>
-                  <TableHeader>
+              <TableHeader>
                     <TableRow className="bg-muted/5">
-                      {['id','text','date','readers','reactions','threadComments','er'].map(col => (
-                        <TableHead
-                          key={col}
+                  {['id','text','date','readers','reactions','threadComments','er'].map(col => (
+                    <TableHead
+                      key={col}
                           className="text-center cursor-pointer select-none group hover:bg-muted/10 transition-colors"
                           onClick={() => {
                             if (isSorting) return; // Блокируем сортировку во время обработки
                             setSort(s => ({
-                              column: col,
-                              direction: s.column === col ? (s.direction === 'asc' ? 'desc' : 'asc') : 'desc',
+                        column: col,
+                        direction: s.column === col ? (s.direction === 'asc' ? 'desc' : 'asc') : 'desc',
                             }))
                           }}
                         >
                           {col === 'id' && (
                             <div className="flex items-center justify-center gap-1 py-2">
                               <span>ID</span>
-                              {sort.column === col ? (
+                        {sort.column === col ? (
                                 sort.direction === 'asc' ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />
                               ) : (
                                 <ArrowUpDown className="w-3.5 h-3.5 opacity-30 group-hover:opacity-60" />
@@ -1802,22 +1802,22 @@ export default function AnalyticsDashboard({
                               )}
                             </div>
                           )}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pagedStats.map(msg => (
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pagedStats.map(msg => (
                       <TableRow key={msg.id} className="hover:bg-primary/5 transition h-[53px]">
-                        <TableCell className="text-center">{msg.id}</TableCell>
-                        <TableCell title={msg.text} className="max-w-[300px] truncate">{msg.text?.slice(0, 60) || msg.id}</TableCell>
-                        <TableCell className="text-center">{msg.date?.slice(0, 16)}</TableCell>
-                        <TableCell className="text-center">{msg.readers}</TableCell>
-                        <TableCell className="text-center">{msg.reactions}</TableCell>
-                        <TableCell className="text-center">{msg.threadComments}</TableCell>
-                        <TableCell className="text-center font-bold text-primary">{msg.er}</TableCell>
-                      </TableRow>
-                    ))}
+                    <TableCell className="text-center">{msg.id}</TableCell>
+                    <TableCell title={msg.text} className="max-w-[300px] truncate">{msg.text?.slice(0, 60) || msg.id}</TableCell>
+                    <TableCell className="text-center">{msg.date?.slice(0, 16)}</TableCell>
+                    <TableCell className="text-center">{msg.readers}</TableCell>
+                    <TableCell className="text-center">{msg.reactions}</TableCell>
+                    <TableCell className="text-center">{msg.threadComments}</TableCell>
+                    <TableCell className="text-center font-bold text-primary">{msg.er}</TableCell>
+                    </TableRow>
+                ))}
                     {/* Добавляем пустые строки, если данных меньше 10 */}
                     {pagedStats.length > 0 && pagedStats.length < pageSize && Array.from({ length: pageSize - pagedStats.length }).map((_, index) => (
                       <TableRow key={`empty-${index}`} className="h-[53px] opacity-40 hover:opacity-10 transition-opacity">
@@ -1830,7 +1830,7 @@ export default function AnalyticsDashboard({
                         <TableCell className="text-center text-muted/30 py-4">·</TableCell>
                       </TableRow>
                     ))}
-                    {pagedStats.length === 0 && (
+                {pagedStats.length === 0 && (
                       <>
                         <TableRow className="h-[100px]">
                           <TableCell colSpan={7} className="text-center align-middle">
@@ -1840,7 +1840,7 @@ export default function AnalyticsDashboard({
                               <span className="text-xs text-muted/60">Попробуйте изменить параметры поиска</span>
                             </div>
                           </TableCell>
-                        </TableRow>
+                  </TableRow>
                         {/* Добавляем 9 пустых строк для сохранения высоты таблицы, но зарезервировали 100px под сообщение */}
                         {Array.from({ length: 8 }).map((_, index) => (
                           <TableRow key={`empty-${index}`} className="h-[53px]">
@@ -1848,30 +1848,30 @@ export default function AnalyticsDashboard({
                           </TableRow>
                         ))}
                       </>
-                    )}
-                  </TableBody>
-                </Table>
+                )}
+              </TableBody>
+            </Table>
                 
-                {/* Пагинация только стрелки */}
-                {totalPages > 1 && (
-                  <Pagination className="mt-2">
-                    <PaginationContent>
-                      <PaginationItem>
+            {/* Пагинация только стрелки */}
+            {totalPages > 1 && (
+              <Pagination className="mt-2">
+                <PaginationContent>
+                  <PaginationItem>
                         <PaginationPrevious onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1 || isSorting} />
-                      </PaginationItem>
-                      <PaginationItem>
+                  </PaginationItem>
+                  <PaginationItem>
                         <span className="text-sm text-muted-foreground">
                           {page} / {totalPages}
                         </span>
                       </PaginationItem>
                       <PaginationItem>
                         <PaginationNext onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages || isSorting} />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                )}
-              </div>
-            </div>
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
+          </div>
+        </div>
           )}
         </>
       )}

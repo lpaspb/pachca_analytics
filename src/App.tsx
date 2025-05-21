@@ -89,18 +89,18 @@ const AnimatedRoutes = () => {
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <TooltipProvider>
-          <BrowserRouter>
-            <AnimatedRoutes />
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
+      <TooltipProvider>
+        <BrowserRouter>
+          <AnimatedRoutes />
             <Toaster />
             <Sonner position="bottom-right" />
-          </BrowserRouter>
-        </TooltipProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
-  );
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
+  </QueryClientProvider>
+);
 };
 
 export default App;

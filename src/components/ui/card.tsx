@@ -16,15 +16,15 @@ const Card = React.forwardRef<
   };
 
   return (
-    <div
-      ref={ref}
-      className={cn(
+  <div
+    ref={ref}
+    className={cn(
         "rounded-lg border border-border",
         variantClassNames[variant],
-        className
-      )}
-      {...props}
-    />
+      className
+    )}
+    {...props}
+  />
   );
 })
 Card.displayName = "Card"
